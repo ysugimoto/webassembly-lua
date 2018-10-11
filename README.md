@@ -2,7 +2,7 @@
 
 Write and compile as WebAssembly program by lua script.
 
-**Note: this project is still under PoC. We have to do more improvement**
+**Note: this project is still under development. We have to do more improvement**
 
 ## Requirements
 
@@ -93,7 +93,7 @@ Then comipled binary will have functions named `hello_world01`, `hello_world02`,
 
 ## Author
 
-Yoshiaki Sugimoto <sugimoto@wnotes.net>
+Yoshiaki Sugimoto
 
 ## License
 
