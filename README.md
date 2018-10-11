@@ -25,8 +25,10 @@ end
 return hello_world()
 ```
 
-`webassembly-lua` will export function name as script filename. For example, if you wrote script as `hello_world.lua`, the `webassembly-lua` will compile and export function as `hello_world`.
-You need to return some string value in each script for now.
+`webassembly-lua` will export function name as script filename.
+For example, if you wrote script as `hello_world.lua`, it be will be compiled and exported function as `hello_world`.
+
+__You need to return some string value in each script for now.__
 
 
 ### Compile as WebAssembly program
