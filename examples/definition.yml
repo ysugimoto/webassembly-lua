@@ -1,0 +1,5 @@
+entry_file: hello_world.lua
+
+functions:
+  hello_world:
+    return: string

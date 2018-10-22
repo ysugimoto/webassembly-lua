@@ -37,7 +37,7 @@ On docker image, the image has `emcc-lua` command:
 
 ```shell
 $ docker pull ysugimoto/webassembly-lua
-$ docker run --rm -v $PWD:/src webassembly-lua emcc-lua hello_world.lua
+$ docker run --rm -v $PWD:/src ysugimoto/webassembly-lua emcc-lua hello_world.lua
 ```
 
 The docker image will create `wasm.js` and `wasm.wasm` file which is compiled by `emscripten`.
