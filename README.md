@@ -8,6 +8,7 @@ Write and compile as WebAssembly program by lua script.
 
 - [emscripten](https://github.com/kripken/emscripten)
 - [lua](https://www.lua.org/) (prefer to use latest version)
+- Python 3.6.5+
 
 To avoid to polute your environment, we prefer to use prebuilt docker image on [docker image](https://hub.docker.com/r/ysugimoto/webassembly-lua/).
 
@@ -18,18 +19,48 @@ To avoid to polute your environment, we prefer to use prebuilt docker image on [
 Here is example `Hello World` script:
 
 ```lua
-local function hello_world()
+function hello_world()
   return 'Hello, WebAssembly Lua!'
 end
-
-return hello_world()
 ```
 
-`webassembly-lua` will export function name as script filename.
-For example, if you wrote script as `hello_world.lua`, will be compiled and exported function as `hello_world`.
+Make sure the function declares as *global* in order to access from C program.
+And, also you can spcify some function arguments like:
 
-__You need to return some string value in each script for now.__
+```lua
+function hell_something(something):
+  return ('Hello, %s!'):format(something)
+end
+```
 
+Then, you need to rememeber what `type` of argument should be supplied and what `type` of value will return (supports `string` or `int` for now).
+
+### Write definitions in `definition.yml`
+
+The `definition.yml` is configuration for generate / compile WebAssembly binary. Format is following:
+
+```yaml
+dependencies:
+  - luaposix
+
+functions:
+  hello_something:
+    return : string
+    args:
+      - string
+
+entry_file: hello_world.lua
+```
+
+Describes each fields:
+
+| Field                  | Type    | Default  | description                                                                    |
+|:----------------------:|:-------:|:--------:|:-------------------------------------------------------------------------------|
+| dependencies           | array   | -        | program dependencies. the list of modules will be installed via `luarocks`.    |
+| functions              | object  | -        | Function definitions. The key is function name which will be exported on WASM. |
+| functions[name].return | string  | -        | Define function return type.                                                   |
+| functions[name].args   | array   | -        | Defined function argument type list.                                           |
+| entry_file             | strring | main.lua | the file name of program entry.                                                |
 
 ### Compile as WebAssembly program
 
@@ -37,14 +68,15 @@ On docker image, the image has `emcc-lua` command:
 
 ```shell
 $ docker pull ysugimoto/webassembly-lua
-$ docker run --rm -v $PWD:/src ysugimoto/webassembly-lua emcc-lua hello_world.lua
+$ docker run --rm -v $PWD:/src ysugimoto/webassembly-lua emcc-lua
 ```
 
-The docker image will create `wasm.js` and `wasm.wasm` file which is compiled by `emscripten`.
+The `emcc-lua` finds `definition.yml in current working directory (in this case, `$PWD`) and start to build.
+If build successfully, you can see a `hello_world.[html,js,wasm]` in your directory. The output file is named by `entry_file` in definition.yml.
 
 ### Run WebAssembly program
 
-Write HTML to run compiled WebAssembly program like:
+Open created or write HTML to run compiled WebAssembly program like:
 
 ```html
 <!doctype html>
@@ -54,42 +86,34 @@ Write HTML to run compiled WebAssembly program like:
     <title>WebAssembly Lua</title>
   </head>
   <body>
-    <script src="./wasm.js"></script>
+    <script src="./hello_world.js"></script>
     <script>
     Module.onRuntimeInitialized = () => {
       // call your function through the Module.cwrap()
-      const helloWorld = Module.cwrap('hello_world', 'string');
-      console.log(helloWorld());
+      const helloSomething = Module.cwrap('hello_something', 'string', ['string']);
+      console.log(helloSomething('WebAssembly Lua'));
     };
     </script>
   </body>
 </html>
 ```
 
-And run local server in your favorite way (e.g python -m http.server) and access to `http://localhost:8000/wasm.html` (port may need), then you can see `Hello, WebAssembly Lua!` message in your browser console.
-
-### Multiple functions
-
-`emcc-lua` command accepts variable-length filenames to compile:
-
-```
-$ docker run --rm -v $PWD:/src webassembly-lua emcc-lua hello_world01.lua hello_world02.lua hello_world03.lua ...
-```
-
-Then comipled binary will have functions named `hello_world01`, `hello_world02`, and `hello_world03`.
+And run local server in your favorite way (e.g python -m http.server) and access to `http://localhost:8000/hello_world.html` (port may need), then you can see `Hello, WebAssembly Lua!` message in your browser console.
 
 ## Features
 
 - [x] Compile single lua script to WebAssembly binary
-- [x] Only support for return type of string
-- [x] Only support to call function without any arguments
+- [x] Support for return type of string and int
+- [x] Support to call function with any arguments
+- [x] Enable to bundle some libraries (e.g. hosted on luarocks, or Independent C libraries)
 
 ## TODOs
 
-- [ ] Support other return type which can use in JavaScript (Number, Object -- especially JSON --)
-- [ ] Support to require other lua modules which you defined as other file, installed via luarocks
-- [ ] Support to apply function arguments as detected types
-- [ ] Works with more complicated script. Now we can work on simple script.
+- [x] Support to require other lua modules which you defined as other file, installed via luarocks
+- [x] Support to apply function arguments as detected types
+- [x] Works with more complicated script. Now we can work on simple script.
+- [ ] Support some structured return type which can use in JavaScript (Array, Object -- especially JSON --)
+- [ ] Try to compile various libraries (Now we tried to bundle `luaposix`, it's fine to work)
 
 ## Author
 
