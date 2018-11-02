@@ -42,3 +42,4 @@ luac.out
 # project specific files
 wasm.js
 wasm.wasm
+__pycache__
