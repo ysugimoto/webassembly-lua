@@ -110,6 +110,7 @@ int main(void) {
   if (boot_lua(wasm_lua_state)) {
     printf("failed to boot lua runtime\\n");
     lua_close(wasm_lua_state);
+    return 1;
   }
   printf("Boot Lua Webassembly!\n");
   return 0;
