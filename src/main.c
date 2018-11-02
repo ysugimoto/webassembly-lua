@@ -9,6 +9,7 @@
 #include <emscripten.h>
 
 int boot_lua(lua_State* L);
+static lua_State *wasm_lua_state = NULL;
 
 // Pre-compiled lua loader program
 static const unsigned char program[] = {__LUA_BASE__};
@@ -105,6 +106,12 @@ static int docall (lua_State *L, int narg, int nres) {
 
 // Boot function
 int main(void) {
+  wasm_lua_state = luaL_newstate();
+  if (boot_lua(wasm_lua_state)) {
+    printf("failed to boot lua runtime\\n");
+    lua_close(wasm_lua_state);
+    return 1;
+  }
   printf("Boot Lua Webassembly!\n");
   return 0;
 }

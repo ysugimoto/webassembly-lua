@@ -37,24 +37,20 @@ class Definition():
         template = '''
 EMSCRIPTEN_KEEPALIVE
 {} {}({}) {{
-  lua_State* L = luaL_newstate();
-  if (boot_lua(L)) {{
-    printf("failed to boot lua runtime\\n");
-    lua_close(L);
+  // Push arguments
+  lua_getglobal(wasm_lua_state, "{}");
+  if (!lua_isfunction(wasm_lua_state, -1)) {{
+    printf("function {} is not defined globaly in lua runtime\\n");
+    lua_settop(wasm_lua_state, 0);
     {}
   }}
-  // Push arguments
-  lua_getglobal(L, "{}");
-  if (!lua_isfunction(L, -1)) {{
-    printf("function {} is not defined globaly in lua runtime\\n");
-    {} }}
 {}
 
   // Call lua function
-  if (lua_pcall(L, {}, 1, 0)) {{
+  if (lua_pcall(wasm_lua_state, {}, 1, 0)) {{
     printf("failed to call {} function\\n");
-    printf("error: %s\\n", lua_tostring(L, -1));
-    lua_close(L);
+    printf("error: %s\\n", lua_tostring(wasm_lua_state, -1));
+    lua_settop(wasm_lua_state, 0);
     {}
   }}
   // Handle return values
@@ -69,32 +65,29 @@ EMSCRIPTEN_KEEPALIVE
             for i, arg in enumerate(config.get('args', [])):
                 if arg == 'int':
                     arguments.append('int arg_{}'.format(i))
-                    push_arguments.append('  lua_pushnumber(L, arg_{});'.format(i))
+                    push_arguments.append('  lua_pushnumber(wasm_lua_state, arg_{});'.format(i))
                 elif arg == 'string':
                     arguments.append('const char* arg_{}'.format(i))
-                    push_arguments.append('  lua_pushstring(L, arg_{});'.format(i))
+                    push_arguments.append('  lua_pushstring(wasm_lua_state, arg_{});'.format(i))
 
             failed_return_value = ''
             capture_return_value = ''
             if return_type == 'int':
                 failed_return_value = 'return 0;'
-                capture_return_value = '''  if (lua_isinteger(L, -1)) {
-    int return_value = lua_tointeger(L, -1);
-    lua_pop(L, 1);
-    lua_close(L);
+                capture_return_value = '''  if (lua_isinteger(wasm_lua_state, -1)) {
+    int return_value = lua_tointeger(wasm_lua_state, -1);
+    lua_settop(wasm_lua_state, 0);
     return return_value;
   }
-  lua_close(L);
   return 0;'''
             elif return_type == 'string':
                 failed_return_value = 'return "";'
-                capture_return_value = '''  if (lua_isstring(L, -1)) {
-    const char* return_value = lua_tostring(L, -1);
-    lua_pop(L, 1);
-    lua_close(L);
+                capture_return_value = '''  if (lua_isstring(wasm_lua_state, -1)) {
+    const char* return_value = lua_tostring(wasm_lua_state, -1);
+    lua_settop(wasm_lua_state, 0);
     return return_value;
   }
-  lua_close(L);
+  lua_close(wasm_lua_state);
   return "";'''
                 return_type = 'const char* '
 
@@ -102,7 +95,6 @@ EMSCRIPTEN_KEEPALIVE
                     return_type,
                     name,
                     ', '.join(arguments),
-                    failed_return_value,
                     name,
                     name,
                     failed_return_value,

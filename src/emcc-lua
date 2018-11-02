@@ -61,7 +61,7 @@ def main():
     bundle_files += glob.glob(LUAROCKS_LOCAL_MODULE_DIR + '/lib/lua/**/*.so', recursive=True)
     bundle_files += glob.glob(LUAROCKS_LOCAL_MODULE_DIR + '/share/lua/**/*.lua', recursive=True)
 
-    debug_print('===Start to factory and distinguish module files')
+    debug_print('Start to factory and distinguish module files')
 
     for bundle in bundle_files:
         if is_lua_source_file(bundle):
