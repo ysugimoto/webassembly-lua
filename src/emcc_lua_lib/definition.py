@@ -37,6 +37,10 @@ class Definition():
         template = '''
 EMSCRIPTEN_KEEPALIVE
 {} {}({}) {{
+  if (wasm_lua_state == NULL) {{
+    wasm_lua_state = luaL_newstate();
+    boot_lua(wasm_lua_state);
+  }}
   // Push arguments
   lua_getglobal(wasm_lua_state, "{}");
   if (!lua_isfunction(wasm_lua_state, -1)) {{
