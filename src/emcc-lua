@@ -95,10 +95,6 @@ def main():
                 print(NM + ' command failed')
                 return
 
-    if len(lua_files) == 0:
-        print("no bundle files.")
-        return
-
     debug_print('===== Bundle Lua files ======')
     debug_print('\n'.join([v.filepath for v in lua_files]))
     debug_print('===== Library files =====')
@@ -160,7 +156,7 @@ def main():
     cmd.extend(['/tmp/compile.c', quote('/lua-{}/src/liblua.a'.format(os.environ.get('LUA_VERSION')))])
     cmd.extend([quote(v.filepath) for v in link_libraries])
     cmd.extend([quote(v.filepath) for v in link_libraries])
-    cmd.extend(['-lm', '-ldl', '-o', '{}.html'.format(output_target), '-s', 'EXTRA_EXPORTED_RUNTIME_METHODS=["cwrap"]'])
+    cmd.extend(['-lm', '-ldl', '-o', '{}.js'.format(output_target), '-s', 'EXTRA_EXPORTED_RUNTIME_METHODS=["cwrap"]'])
 
     debug_print('Compile command is {}'.format(' '.join(cmd)))
     shell_exec(*cmd)

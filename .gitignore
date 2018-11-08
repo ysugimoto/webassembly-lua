@@ -43,3 +43,5 @@ luac.out
 wasm.js
 wasm.wasm
 __pycache__
+examples/hello_world.js
+examples/hello_world.wasm

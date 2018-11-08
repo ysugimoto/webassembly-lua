@@ -1,0 +1,18 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>WASM Lua Exmaple</title>
+  </head>
+  <body>
+    <script>
+    var Module = {};
+    Module.onRuntimeInitialized = () => {
+      const helloWorld = Module.cwrap('hello_world', 'string');
+      console.log(helloWorld());
+    };
+    </script>
+    <script async src="hello_world.js"></script>
+  </body>
+</html>
+
