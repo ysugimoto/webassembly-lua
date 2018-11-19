@@ -4,26 +4,34 @@ import yaml
 from .helper import shell_exec, debug_print
 
 class Definition():
+    dependencies = []
+    functions = []
+    entry_file = ''
+    output_file = ''
+
     def __init__(self, definition_file):
         if not os.path.isfile(definition_file):
             print('{} is not exists. need to place it'.format(definition_file))
             sys.exit(1)
 
-        self.dependencies = []
-        self.functions = []
-        self.entry_file = ''
         with open(definition_file, mode='r') as definition:
             data = yaml.load(definition)
             self.dependencies = data.get('dependencies', [])
-            self.functions = data.get('functions', {})
+            self.functions = data.get('functions', [])
             self.entry_file = data.get('entry_file', '')
-
+            self.output_file = data.get('output_file', '')
 
     def get_entry_file(self):
         if not self.entry_file:
             return os.path.join(os.getcwd(), 'main.lua')
 
         return os.path.abspath(self.entry_file)
+
+    def get_output_file(self):
+        if self.output_file:
+            return self.output_file
+
+        return '{}.html'.format(os.path.splitext(os.path.basename(self.entry_file))[0])
 
 
     def install_dependencies(self, local_module_dir):

@@ -1,4 +1,5 @@
 entry_file: hello_world.lua
+output_file: hello_world.js
 
 functions:
   hello_world:

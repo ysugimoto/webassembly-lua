@@ -30,6 +30,17 @@ def __get_uname():
 
     return uname
 
+def __get_output(output, entry_file):
+    out_file = os.path.basename(entry_file)
+    if output.get('file'):
+        out_file = output.get('file')
+
+    tpl = os.path.splitext(out_file)[1]
+    if not tpl[1]:
+        tpl[1] = 'html'
+
+    return '{}.{}'.format(tpl[0], tpl[1])
+
 def main():
     uname = __get_uname()
 
@@ -150,13 +161,12 @@ def main():
 
     # Finally, compile to wasm
     debug_print('Start to compile as WASM')
-    output_target = os.path.splitext(os.path.basename(entry_file))[0]
     cmd = ['emcc', '-Os', '-s', 'WASM=1']
     cmd.extend(['-I', quote('/lua-{}/src'.format(os.environ.get('LUA_VERSION')))])
     cmd.extend(['/tmp/compile.c', quote('/lua-{}/src/liblua.a'.format(os.environ.get('LUA_VERSION')))])
     cmd.extend([quote(v.filepath) for v in link_libraries])
     cmd.extend([quote(v.filepath) for v in link_libraries])
-    cmd.extend(['-lm', '-ldl', '-o', '{}.js'.format(output_target), '-s', 'EXTRA_EXPORTED_RUNTIME_METHODS=["cwrap"]'])
+    cmd.extend(['-lm', '-ldl', '-o', definition.get_output_file(), '-s', 'EXTRA_EXPORTED_RUNTIME_METHODS=["cwrap"]'])
 
     debug_print('Compile command is {}'.format(' '.join(cmd)))
     shell_exec(*cmd)
