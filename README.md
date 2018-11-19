@@ -10,7 +10,7 @@ Write and compile as WebAssembly program by lua script.
 - [lua](https://www.lua.org/) (prefer to use latest version)
 - Python 3.6.5+
 
-To avoid to polute your environment, we prefer to use prebuilt docker image on [docker image](https://hub.docker.com/r/ysugimoto/webassembly-lua/).
+To avoid to polute your environment, we *stringly* prefer to use prebuilt docker image on [docker hub](https://hub.docker.com/r/ysugimoto/webassembly-lua/).
 
 ## How to use
 
@@ -28,7 +28,7 @@ Make sure the function declares as *global* in order to access from C program.
 And, also you can spcify some function arguments like:
 
 ```lua
-function hell_something(something):
+function hello_something(something):
   return ('Hello, %s!'):format(something)
 end
 ```
@@ -50,17 +50,19 @@ functions:
       - string
 
 entry_file: hello_world.lua
+output_file: hello_world.html
 ```
 
 Describes each fields:
 
 | Field                  | Type    | Default  | description                                                                    |
-|:----------------------:|:-------:|:--------:|:-------------------------------------------------------------------------------|
+|:-----------------------|:-------:|:--------:|:-------------------------------------------------------------------------------|
 | dependencies           | array   | -        | program dependencies. the list of modules will be installed via `luarocks`.    |
 | functions              | object  | -        | Function definitions. The key is function name which will be exported on WASM. |
 | functions[name].return | string  | -        | Define function return type.                                                   |
 | functions[name].args   | array   | -        | Defined function argument type list.                                           |
 | entry_file             | strring | main.lua | the file name of program entry.                                                |
+| output_file            | strring | -        | the file name of output files.                                                 |
 
 ### Compile as WebAssembly program
 
@@ -71,7 +73,7 @@ $ docker pull ysugimoto/webassembly-lua
 $ docker run --rm -v $PWD:/src ysugimoto/webassembly-lua emcc-lua
 ```
 
-The `emcc-lua` finds `definition.yml in current working directory (in this case, `$PWD`) and start to build.
+The `emcc-lua` finds `definition.yml` in current working directory (in this case, `$PWD`) and start to build.
 If build successfully, you can see a `hello_world.[html,js,wasm]` in your directory. The output file is named by `entry_file` in definition.yml.
 
 ### Run WebAssembly program
