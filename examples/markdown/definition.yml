@@ -1,0 +1,11 @@
+entry_file: main.lua
+output_file: wasm_markdown.js
+
+dependencies:
+  - markdown
+
+functions:
+  markdown:
+    return: string
+    args:
+      - string
