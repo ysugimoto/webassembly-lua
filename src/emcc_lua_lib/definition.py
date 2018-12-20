@@ -99,7 +99,6 @@ EMSCRIPTEN_KEEPALIVE
     lua_settop(wasm_lua_state, 0);
     return return_value;
   }
-  lua_close(wasm_lua_state);
   return "";'''
                 return_type = 'const char* '
 
