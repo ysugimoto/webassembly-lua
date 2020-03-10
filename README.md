@@ -10,7 +10,7 @@ Write and compile as WebAssembly program by lua script.
 - [lua](https://www.lua.org/) (prefer to use latest version)
 - Python 3.6.5+
 
-To avoid to polute your environment, we *stringly* prefer to use prebuilt docker image on [docker hub](https://hub.docker.com/r/ysugimoto/webassembly-lua/).
+To avoid to polute your environment, we *strongly* prefer to use prebuilt docker image on [docker hub](https://hub.docker.com/r/ysugimoto/webassembly-lua/).
 
 ## How to use
 
@@ -25,7 +25,7 @@ end
 ```
 
 Make sure the function declares as *global* in order to access from C program.
-And, also you can spcify some function arguments like:
+And, also you can specify some function arguments like:
 
 ```lua
 function hello_something(something):
@@ -37,7 +37,7 @@ Then, you need to rememeber what `type` of argument should be supplied and what 
 
 ### Write definitions in `definition.yml`
 
-The `definition.yml` is configuration for generate / compile WebAssembly binary. Format is following:
+The `definition.yml` is configuration for generate / compile WebAssembly binary. See following:
 
 ```yaml
 dependencies:
@@ -74,7 +74,7 @@ $ docker run --rm -v $PWD:/src ysugimoto/webassembly-lua emcc-lua
 ```
 
 The `emcc-lua` finds `definition.yml` in current working directory (in this case, `$PWD`) and start to build.
-If build successfully, you can see a `hello_world.[html,js,wasm]` in your directory. The output file is named by `entry_file` in definition.yml.
+After built successfully, you can see a `hello_world.[html,js,wasm]` in your directory. The output file is named by `entry_file` in definition.yml.
 
 ### Run WebAssembly program
 
