@@ -15,7 +15,7 @@ class Definition():
             sys.exit(1)
 
         with open(definition_file, mode='r') as definition:
-            data = yaml.load(definition)
+            data = yaml.safe_load(definition)
             self.dependencies = data.get('dependencies', [])
             self.functions = data.get('functions', [])
             self.entry_file = data.get('entry_file', '')
