@@ -1,15 +1,14 @@
-#!/usr/bin/env python3.6
+#!/usr/bin/env python3
 
 import sys
 import os
 import glob
 import re
 import shutil
-import yaml
 from shlex import quote
 import subprocess
 
-sys.path.append('/opt')
+sys.path.append('/usr/local/emcc-lua')
 
 from emcc_lua_lib.definition import Definition
 from emcc_lua_lib.file import LuaFile, ModuleFile, BundleFile
@@ -162,11 +161,12 @@ def main():
     # Finally, compile to wasm
     debug_print('Start to compile as WASM')
     cmd = ['emcc', '-Os', '-s', 'WASM=1']
+    cmd.extend(definition.get_extra_args())
     cmd.extend(['-I', quote('/lua-{}/src'.format(os.environ.get('LUA_VERSION')))])
     cmd.extend(['/tmp/compile.c', quote('/lua-{}/src/liblua.a'.format(os.environ.get('LUA_VERSION')))])
     cmd.extend([quote(v.filepath) for v in link_libraries])
     cmd.extend([quote(v.filepath) for v in link_libraries])
-    cmd.extend(['-lm', '-ldl', '-o', definition.get_output_file(), '-s', 'EXTRA_EXPORTED_RUNTIME_METHODS=["cwrap"]'])
+    cmd.extend(['-lm', '-ldl', '-o', definition.get_output_file(), '-s', 'EXPORTED_RUNTIME_METHODS=["cwrap"]'])
 
     debug_print('Compile command is {}'.format(' '.join(cmd)))
     shell_exec(*cmd)
