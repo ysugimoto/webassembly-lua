@@ -8,24 +8,43 @@ class Definition():
     functions = []
     entry_file = ''
     output_file = ''
+    extra_compile_arguments = {}
+    pre_js = ''
 
     def __init__(self, definition_file):
         if not os.path.isfile(definition_file):
-            print('{} is not exists. need to place it'.format(definition_file))
+            print('{} does not exist. need to place it'.format(definition_file))
             sys.exit(1)
 
         with open(definition_file, mode='r') as definition:
-            data = yaml.load(definition)
+            data = yaml.safe_load(definition)
             self.dependencies = data.get('dependencies', [])
             self.functions = data.get('functions', [])
             self.entry_file = data.get('entry_file', '')
             self.output_file = data.get('output_file', '')
+            self.extra_compile_arguments = data.get('extra_args', {})
+            self.pre_js = data.get('pre_js', '')
 
     def get_entry_file(self):
         if not self.entry_file:
             return os.path.join(os.getcwd(), 'main.lua')
 
         return os.path.abspath(self.entry_file)
+
+    def get_extra_args(self):
+        args = []
+        for key, val in self.extra_compile_arguments.items():
+            args.extend(['-s', '{}={}'.format(key, val)])
+
+        if self.pre_js:
+            if not os.path.isfile(self.pre_js):
+                print('pre_js: {} does not exist. need to place it'.format(self.pre_js))
+                sys.exit(1)
+
+            args.extend(['--pre-js', self.pre_js])
+
+        return args
+
 
     def get_output_file(self):
         if self.output_file:
