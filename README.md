@@ -33,7 +33,7 @@ function hello_something(something):
 end
 ```
 
-Then, you need to rememeber what `type` of argument should be supplied and what `type` of value will return (supports `string` or `int` for now).
+Then, you need to remember what `type` of argument should be supplied and what `type` of value will return (supports `string` or `int` for now).
 
 ### Write definitions in `definition.yml`
 
